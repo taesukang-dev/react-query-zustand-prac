@@ -7,11 +7,7 @@ import Dictionary from './pages/Dictionary'
 import { loadWordsFB } from './redux/modules/postReducer'
 
 function App() {
-  const dispatch = useDispatch()
   let [view, setView] = useState(false)
-  useEffect(() => {
-    dispatch(loadWordsFB())
-  }, [dispatch])
   return (
     <div className="App">
       {view && <AddWord setView={setView} />}

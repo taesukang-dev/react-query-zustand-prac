@@ -1,37 +1,80 @@
+import { createAction, handleActions } from 'redux-actions'
 import {
   addDoc,
   collection,
   doc,
   getDoc,
   getDocs,
+  limit,
+  query,
   updateDoc,
+  orderBy,
+  startAt,
+  startAfter,
 } from '@firebase/firestore'
 import { db } from '../../firebase'
+import produce from 'immer'
 
-const initialState = []
+const initialState = {
+  list: [],
+  paging: { start: null, next: null, size: 3 },
+  is_loading: false,
+}
 
 // actions
 const ADD = 'post/ADD'
 const LOAD = 'post/LOAD'
 
-export function loadPost(post_list) {
-  return { type: LOAD, post_list }
-}
+// export function loadPost(post_list) {
+//   return { type: LOAD, post_list }
+// }
 
-export function addPost(post_list) {
-  return { type: ADD, post_list }
-}
+// export function addPost(post_list) {
+//   return { type: ADD, post_list }
+// }
+
+export const loadPost = createAction(LOAD, (post_list, paging) => ({
+  post_list,
+  paging,
+}))
+export const addPost = createAction(ADD, (post_list) => ({ post_list }))
 
 // middlewares
-export const loadWordsFB = () => {
-  return async function (dispatch) {
-    const word_data = await getDocs(collection(db, 'dictionary'))
-    let word_list = []
+export const loadWordsFB = (start = null, size = 3) => {
+  return async function (dispatch, getState) {
+    let _paging = getState().postReducer.paging
+    if (_paging.start && !_paging.next) {
+      return
+    }
 
-    word_data.forEach((el) => {
+    const _word_data = collection(db, 'dictionary')
+    let newArr
+    if (start) {
+      newArr = query(
+        _word_data,
+        orderBy('word', 'desc'),
+        startAt(start),
+        limit(size + 1)
+      )
+    } else {
+      newArr = query(_word_data, orderBy('word', 'desc'), limit(size + 1))
+    }
+    const wordSnap = await getDocs(newArr)
+    let paging = {
+      start: wordSnap.docs[0],
+      next:
+        wordSnap.docs.length === size + 1
+          ? wordSnap.docs[wordSnap.docs.length - 1]
+          : null,
+      size: size,
+    }
+
+    let word_list = []
+    wordSnap.forEach((el) => {
       word_list.push({ id: el.id, ...el.data() })
     })
-    dispatch(loadPost(word_list))
+    word_list.pop()
+    dispatch(loadPost(word_list, paging))
   }
 }
 
@@ -72,26 +115,44 @@ export const modifyFB = (payload) => {
 }
 
 // reducer
-const postReducer = (state = initialState, action) => {
-  switch (action.type) {
-    case LOAD:
-      state = action.post_list
-      return state
-    case ADD:
-      let newState = [
-        ...state,
-        {
-          id: action.post_list.id,
-          word: action.post_list.word,
-          desc: action.post_list.desc,
-          eg: action.post_list.eg,
-        },
-      ]
+// const postReducer = (state = initialState, action) => {
+//   switch (action.type) {
+//     case LOAD:
+//       state = action.payload.post_list
+//       return state
+//     case ADD:
+//       let newState = [
+//         ...state,
+//         {
+//           id: action.payload.post_list.id,
+//           word: action.payload.post_list.word,
+//           desc: action.payload.post_list.desc,
+//           eg: action.payload.post_list.eg,
+//         },
+//       ]
 
-      return newState
-    default:
-      return state
-  }
-}
+//       return newState
+//     default:
+//       return state
+//   }
+// }
 
-export default postReducer
+export default handleActions(
+  {
+    [LOAD]: (state, action) =>
+      produce(state, (draft) => {
+        draft.list.push(...action.payload.post_list)
+        draft.paging = action.payload.paging
+      }),
+    [ADD]: (state, action) =>
+      produce(state, (draft) => {
+        draft.list.push({
+          id: action.payload.post_list.id,
+          word: action.payload.post_list.word,
+          desc: action.payload.post_list.desc,
+          eg: action.payload.post_list.eg,
+        })
+      }),
+  },
+  initialState
+)

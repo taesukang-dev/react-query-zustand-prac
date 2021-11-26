@@ -1,21 +1,39 @@
+import React, { useEffect } from 'react'
+import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
+import InfiScroll from '../components/InfiScroll'
 import Post from '../components/Post'
-import { Grid, Plus, Text } from '../elements'
+import { Button, Grid, Plus, Text } from '../elements'
+import { loadWordsFB } from '../redux/modules/postReducer'
 
 const Dictionary = (props) => {
-  let state = useSelector((state) => state.postReducer)
+  const dispatch = useDispatch()
+  const state = useSelector((state) => state.postReducer.list)
+  const paging = useSelector((state) => state.postReducer.paging)
+  useEffect(() => {
+    if (state.length === 0) {
+      dispatch(loadWordsFB())
+    }
+  }, [])
   return (
-    <>
-      <Grid background="royalblue" padding="16px">
-        <Text size="30px"> MY DICTIONARY</Text>
-        <Grid isFlex style={{ flexDirection: 'column' }}>
-          {state.map((el, i) => {
-            return <Post {...el} i={i} key={i} />
-          })}
+    <React.Fragment>
+      <InfiScroll
+        callNext={() => {
+          dispatch(loadWordsFB(paging.next))
+        }}
+        is_next={paging.next ? true : false}
+      >
+        <Grid background="royalblue" padding="16px">
+          <Text size="30px"> MY DICTIONARY</Text>
+          <Grid isFlex style={{ flexDirection: 'column' }}>
+            {state.map((el, i) => {
+              return <Post {...el} i={i} key={i} />
+            })}
+          </Grid>
+          <Plus onClick={() => props.setView(true)} />
         </Grid>
-        <Plus onClick={() => props.setView(true)} />
-      </Grid>
-    </>
+      </InfiScroll>
+    </React.Fragment>
   )
 }
 

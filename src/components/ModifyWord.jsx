@@ -14,7 +14,7 @@ const ModifyWord = (props) => {
 
   return (
     <>
-      <Grid height="100%" padding="16px" zIndex="10" background="white">
+      <Grid height="100%" zIndex="10" background="white">
         <Grid padding="16px">
           <Text label="단어"></Text>
           <InputBox
@@ -55,6 +55,14 @@ const ModifyWord = (props) => {
           }}
         >
           수정하기
+        </Button>
+        <Button
+          margin="0px 0px 0px 10px"
+          onClick={() => {
+            props.setViewModify(false)
+          }}
+        >
+          닫기
         </Button>
       </Grid>
     </>

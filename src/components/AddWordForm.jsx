@@ -41,6 +41,14 @@ const AddWordForm = (props) => {
             )
           }}
         />
+        <Button
+          margin="0px 0px 0px 10px"
+          onClick={() => {
+            props.setView(false)
+          }}
+        >
+          닫기
+        </Button>
       </Grid>
     </>
   )

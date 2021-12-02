@@ -8,7 +8,7 @@ const Post = (props) => {
 
   return (
     <>
-      <Grid background="#fff" margin="20px" width="80vw">
+      <Grid padding="16px" background="#fff" margin="20px" width="80vw">
         <Grid margin="15px 0px 0px 0px">
           <Text label="단어" bold>
             {word}

@@ -10,7 +10,6 @@ import {
   updateDoc,
   orderBy,
   startAt,
-  startAfter,
 } from '@firebase/firestore'
 import { db } from '../../firebase'
 import produce from 'immer'
@@ -24,15 +23,6 @@ const initialState = {
 // actions
 const ADD = 'post/ADD'
 const LOAD = 'post/LOAD'
-
-// export function loadPost(post_list) {
-//   return { type: LOAD, post_list }
-// }
-
-// export function addPost(post_list) {
-//   return { type: ADD, post_list }
-// }
-
 export const loadPost = createAction(LOAD, (post_list, paging) => ({
   post_list,
   paging,
@@ -60,6 +50,7 @@ export const loadWordsFB = (start = null, size = 3) => {
       newArr = query(_word_data, orderBy('word', 'desc'), limit(size + 1))
     }
     const wordSnap = await getDocs(newArr)
+    console.log(wordSnap.docs.length)
     let paging = {
       start: wordSnap.docs[0],
       next:
@@ -113,29 +104,6 @@ export const modifyFB = (payload) => {
     })
   }
 }
-
-// reducer
-// const postReducer = (state = initialState, action) => {
-//   switch (action.type) {
-//     case LOAD:
-//       state = action.payload.post_list
-//       return state
-//     case ADD:
-//       let newState = [
-//         ...state,
-//         {
-//           id: action.payload.post_list.id,
-//           word: action.payload.post_list.word,
-//           desc: action.payload.post_list.desc,
-//           eg: action.payload.post_list.eg,
-//         },
-//       ]
-
-//       return newState
-//     default:
-//       return state
-//   }
-// }
 
 export default handleActions(
   {

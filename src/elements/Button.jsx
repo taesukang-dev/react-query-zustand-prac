@@ -1,20 +1,25 @@
 import styled from 'styled-components'
 
 const Button = (props) => {
-  const { children } = props
+  const { children, margin } = props
+  const styles = { margin }
 
   return (
     <>
-      <AddButton onClick={props.onClick}>{children}</AddButton>
+      <AddButton {...styles} onClick={props.onClick}>
+        {children}
+      </AddButton>
     </>
   )
 }
 
 Button.defaultProps = {
   children: '추가하기',
+  margin: '',
 }
 
 const AddButton = styled.button`
+  margin: ${(props) => props.margin};
   cursor: pointer;
   outline: none;
   border: none;

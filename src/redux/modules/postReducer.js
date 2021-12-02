@@ -23,11 +23,14 @@ const initialState = {
 // actions
 const ADD = 'post/ADD'
 const LOAD = 'post/LOAD'
+const MODIFY = 'post/MODIFY'
+
 export const loadPost = createAction(LOAD, (post_list, paging) => ({
   post_list,
   paging,
 }))
 export const addPost = createAction(ADD, (post_list) => ({ post_list }))
+export const modifyPost = createAction(MODIFY, (post) => ({ post }))
 
 // middlewares
 export const loadWordsFB = (start = null, size = 3) => {
@@ -50,7 +53,6 @@ export const loadWordsFB = (start = null, size = 3) => {
       newArr = query(_word_data, orderBy('word', 'desc'), limit(size + 1))
     }
     const wordSnap = await getDocs(newArr)
-    console.log(wordSnap.docs.length)
     let paging = {
       start: wordSnap.docs[0],
       next:
@@ -80,16 +82,16 @@ export const loadOneWordFB = (id) => {
 export const addFB = (payload) => {
   return async function (dispatch) {
     const docRef = await addDoc(collection(db, 'dictionary'), {
-      word: payload.word,
-      desc: payload.desc,
-      eg: payload.eg,
+      word: payload.wordRef,
+      desc: payload.descRef,
+      eg: payload.egRef,
     })
 
     const newObject = {
       id: docRef.id,
-      word: payload.word,
-      desc: payload.desc,
-      eg: payload.eg,
+      word: payload.wordRef,
+      desc: payload.descRef,
+      eg: payload.egRef,
     }
 
     dispatch(addPost(newObject))
@@ -102,6 +104,7 @@ export const modifyFB = (payload) => {
     await updateDoc(docRef, {
       ...payload,
     })
+    await getDoc(docRef).then((doc) => dispatch(modifyPost(doc.data())))
   }
 }
 
@@ -120,6 +123,12 @@ export default handleActions(
           desc: action.payload.post_list.desc,
           eg: action.payload.post_list.eg,
         })
+      }),
+    [MODIFY]: (state, action) =>
+      produce(state, (draft) => {
+        draft.list = draft.list.map((el) =>
+          el.id === action.payload.post.id ? (el = action.payload.post) : el
+        )
       }),
   },
   initialState

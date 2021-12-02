@@ -8,6 +8,7 @@ import { loadOneWordFB, modifyFB } from '../redux/modules/postReducer'
 const ModifyWord = (props) => {
   let [word, setWord] = useState({})
   let dispatch = useDispatch()
+
   useEffect(() => {
     dispatch(loadOneWordFB(props.id)).then((res) => setWord(res))
   }, [dispatch, props.id])
@@ -49,9 +50,7 @@ const ModifyWord = (props) => {
         <Button
           onClick={() => {
             props.setViewModify(false)
-            dispatch(modifyFB({ id: props.id, ...word })).then((res) =>
-              window.location.reload()
-            )
+            dispatch(modifyFB({ id: props.id, ...word }))
           }}
         >
           수정하기

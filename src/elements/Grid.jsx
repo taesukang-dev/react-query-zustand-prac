@@ -1,9 +1,10 @@
 import styled from 'styled-components'
 
 const Grid = (props) => {
+  const { _onSubmit } = props
   return (
     <>
-      <Form {...props}></Form>
+      <Form onSubmit={_onSubmit} {...props}></Form>
     </>
   )
 }
@@ -17,6 +18,7 @@ Grid.defaultProps = {
   background: false,
   zIndex: 0,
   position: '',
+  _onSubmit: () => {},
 }
 
 const Form = styled.div`

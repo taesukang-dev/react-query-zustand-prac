@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 
 const Button = (props) => {
-  const { children, margin } = props
+  const { children, margin, type } = props
   const styles = { margin }
 
   return (
@@ -16,6 +16,7 @@ const Button = (props) => {
 Button.defaultProps = {
   children: '추가하기',
   margin: '',
+  type: '',
 }
 
 const AddButton = styled.button`

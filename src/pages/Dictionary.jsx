@@ -3,11 +3,13 @@ import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
 import InfiScroll from '../components/InfiScroll'
 import Post from '../components/Post'
-import { Button, Grid, Plus, Text } from '../elements'
+import useZustand from '../components/zustand'
+import { Grid, Plus, Text } from '../elements'
 import { loadWordsFB } from '../redux/modules/postReducer'
 
 const Dictionary = (props) => {
   const dispatch = useDispatch()
+  const setViewAdd = useZustand((state) => state.setViewAdd)
   const state = useSelector((state) => state.postReducer.list)
   const paging = useSelector((state) => state.postReducer.paging)
   useEffect(() => {
@@ -30,7 +32,7 @@ const Dictionary = (props) => {
               return <Post {...el} i={i} key={i} />
             })}
           </Grid>
-          <Plus onClick={() => props.setView(true)} />
+          <Plus onClick={setViewAdd} />
         </Grid>
       </InfiScroll>
     </React.Fragment>

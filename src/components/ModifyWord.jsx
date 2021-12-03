@@ -1,17 +1,34 @@
+import { doc, getDoc, updateDoc } from '@firebase/firestore'
 import { useState } from 'react'
-import { useEffect } from 'react'
+import { useMutation, useQuery } from 'react-query'
 import { useDispatch } from 'react-redux'
 import styled from 'styled-components'
 import { Button, Grid, Text } from '../elements'
-import { loadOneWordFB, modifyFB } from '../redux/modules/postReducer'
+import { db } from '../firebase'
+import { modifyPost } from '../redux/modules/postReducer'
 
 const ModifyWord = (props) => {
+  const dispatch = useDispatch()
   let [word, setWord] = useState({})
-  let dispatch = useDispatch()
 
-  useEffect(() => {
-    dispatch(loadOneWordFB(props.id)).then((res) => setWord(res))
-  }, [dispatch, props.id])
+  const { isLoading, error, data } = useQuery(
+    ['onePost', new Date().getTime()],
+    async () => {
+      const docRef = doc(db, 'dictionary', props.id)
+      const docSnap = await getDoc(docRef)
+      setWord(docSnap.data())
+
+      return docSnap.data()
+    }
+  )
+
+  const mutation = useMutation(async (payload) => {
+    const docRef = doc(db, 'dictionary', payload.id)
+    await updateDoc(docRef, {
+      ...payload,
+    })
+    await getDoc(docRef).then((doc) => dispatch(modifyPost(doc.data())))
+  })
 
   return (
     <>
@@ -50,7 +67,7 @@ const ModifyWord = (props) => {
         <Button
           onClick={() => {
             props.setViewModify(false)
-            dispatch(modifyFB({ id: props.id, ...word }))
+            mutation.mutate({ id: props.id, ...word })
           }}
         >
           수정하기

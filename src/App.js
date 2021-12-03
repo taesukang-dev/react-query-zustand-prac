@@ -1,23 +1,27 @@
-import { useEffect } from 'react'
 import { useState } from 'react'
-import { useDispatch } from 'react-redux'
 import { Route, Routes } from 'react-router'
 import AddWord from './components/AddWord'
 import Dictionary from './pages/Dictionary'
-import { loadWordsFB } from './redux/modules/postReducer'
+import { QueryClient, QueryClientProvider, useQuery } from 'react-query'
+import useZustand from './components/zustand'
+
+const queryClient = new QueryClient()
 
 function App() {
+  const addView = useZustand((state) => state.viewAdd)
   let [view, setView] = useState(false)
   return (
-    <div className="App">
-      {view && <AddWord setView={setView} />}
+    <QueryClientProvider client={queryClient}>
+      <div className="App">
+        {addView && <AddWord setView={setView} />}
 
-      {view === false && (
-        <Routes>
-          <Route path="/" element={<Dictionary setView={setView} />} />
-        </Routes>
-      )}
-    </div>
+        {addView === false && (
+          <Routes>
+            <Route path="/" element={<Dictionary />} />
+          </Routes>
+        )}
+      </div>
+    </QueryClientProvider>
   )
 }
 

@@ -71,42 +71,42 @@ export const loadWordsFB = (start = null, size = 3) => {
   }
 }
 
-export const loadOneWordFB = (id) => {
-  return async function (dispatch) {
-    const docRef = doc(db, 'dictionary', id)
-    const docSnap = await getDoc(docRef)
-    return docSnap.data()
-  }
-}
+// export const addFB = (payload) => {
+//   return async function (dispatch) {
+//     const docRef = await addDoc(collection(db, 'dictionary'), {
+//       word: payload.wordRef,
+//       desc: payload.descRef,
+//       eg: payload.egRef,
+//     })
 
-export const addFB = (payload) => {
-  return async function (dispatch) {
-    const docRef = await addDoc(collection(db, 'dictionary'), {
-      word: payload.wordRef,
-      desc: payload.descRef,
-      eg: payload.egRef,
-    })
+//     const newObject = {
+//       id: docRef.id,
+//       word: payload.wordRef,
+//       desc: payload.descRef,
+//       eg: payload.egRef,
+//     }
 
-    const newObject = {
-      id: docRef.id,
-      word: payload.wordRef,
-      desc: payload.descRef,
-      eg: payload.egRef,
-    }
+//     dispatch(addPost(newObject))
+//   }
+// }
 
-    dispatch(addPost(newObject))
-  }
-}
+// export const loadOneWordFB = (id) => {
+//   return async function (dispatch) {
+//     const docRef = doc(db, 'dictionary', id)
+//     const docSnap = await getDoc(docRef)
+//     return docSnap.data()
+//   }
+// }
 
-export const modifyFB = (payload) => {
-  return async function (dispatch, getState) {
-    const docRef = doc(db, 'dictionary', payload.id)
-    await updateDoc(docRef, {
-      ...payload,
-    })
-    await getDoc(docRef).then((doc) => dispatch(modifyPost(doc.data())))
-  }
-}
+// export const modifyFB = (payload) => {
+//   return async function (dispatch, getState) {
+//     const docRef = doc(db, 'dictionary', payload.id)
+//     await updateDoc(docRef, {
+//       ...payload,
+//     })
+//     await getDoc(docRef).then((doc) => dispatch(modifyPost(doc.data())))
+//   }
+// }
 
 export default handleActions(
   {

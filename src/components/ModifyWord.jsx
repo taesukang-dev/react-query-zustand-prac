@@ -1,5 +1,5 @@
 import { doc, getDoc, updateDoc } from '@firebase/firestore'
-import { useState } from 'react'
+import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { useMutation, useQuery } from 'react-query'
 import { useDispatch } from 'react-redux'
 import styled from 'styled-components'
@@ -10,17 +10,13 @@ import { modifyPost } from '../redux/modules/postReducer'
 const ModifyWord = (props) => {
   const dispatch = useDispatch()
   let [word, setWord] = useState({})
+  const fetchData = async () => {
+    const docRef = doc(db, 'dictionary', props.id)
+    const docSnap = await getDoc(docRef)
+    setWord(docSnap.data())
+  }
 
-  const { isLoading, error, data } = useQuery(
-    ['onePost', new Date().getTime()],
-    async () => {
-      const docRef = doc(db, 'dictionary', props.id)
-      const docSnap = await getDoc(docRef)
-      setWord(docSnap.data())
-
-      return docSnap.data()
-    }
-  )
+  const { isLoading, error, data, isFetched } = useQuery(['onePost'], fetchData)
 
   const mutation = useMutation(async (payload) => {
     const docRef = doc(db, 'dictionary', payload.id)

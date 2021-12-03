@@ -52,26 +52,45 @@ const AddWordForm = (props) => {
           <Grid padding="16px">
             <Text label="단어"></Text>
             <InputBox
-              {...register('wordRef', { minLength: 3, maxLength: 20 })}
+              {...register('wordRef', {
+                minLength: 3,
+                required: true,
+              })}
             />
             {errors.wordRef?.type === 'minLength' && (
               <Text color="red">3글자를 넘겨야 해요!</Text>
             )}
-            {errors.wordRef?.type === 'maxLength' && (
-              <Text color="red">20글자를 넘길 수 없어요!</Text>
+            {errors.wordRef?.type === 'required' && (
+              <Text color="red">3글자를 넘겨야 해요!</Text>
             )}
           </Grid>
 
           <Grid padding="16px">
             <Text label="설명"></Text>
-            <InputBox {...register('descRef')} />
+            <InputBox
+              {...register('descRef', { minLength: 3, required: true })}
+            />
           </Grid>
+          {errors.descRef?.type === 'minLength' && (
+            <Text color="red">3글자를 넘겨야 해요!</Text>
+          )}
+          {errors.descRef?.type === 'required' && (
+            <Text color="red">3글자를 넘겨야 해요!</Text>
+          )}
 
           <Grid padding="16px">
             <Text label="얘시"></Text>
-            <InputBox {...register('egRef')} />
+            <InputBox
+              {...register('egRef', { minLength: 3, required: true })}
+            />
           </Grid>
         </Grid>
+        {errors.egRef?.type === 'minLength' && (
+          <Text color="red">3글자를 넘겨야 해요!</Text>
+        )}
+        {errors.egRef?.type === 'required' && (
+          <Text color="red">3글자를 넘겨야 해요!</Text>
+        )}
 
         <Grid padding="16px" isFlex>
           <Button margin="0px 0px 0px 10px" type="submit" />

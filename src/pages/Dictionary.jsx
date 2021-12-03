@@ -12,6 +12,7 @@ const Dictionary = (props) => {
   const setViewAdd = useZustand((state) => state.setViewAdd)
   const state = useSelector((state) => state.postReducer.list)
   const paging = useSelector((state) => state.postReducer.paging)
+  console.log(state)
   useEffect(() => {
     if (state.length === 0) {
       dispatch(loadWordsFB())

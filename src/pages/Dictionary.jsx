@@ -1,41 +1,40 @@
-import React, { useEffect } from 'react'
-import { useDispatch } from 'react-redux'
-import { useSelector } from 'react-redux'
-import InfiScroll from '../components/InfiScroll'
+import { collection, getDocs, query } from '@firebase/firestore'
+import React, { useEffect, useState } from 'react'
+import { useQuery } from 'react-query'
 import Post from '../components/Post'
 import useZustand from '../components/zustand'
 import { Grid, Plus, Text } from '../elements'
-import { loadWordsFB } from '../redux/modules/postReducer'
+import { db } from '../firebase'
 
 const Dictionary = (props) => {
-  const dispatch = useDispatch()
   const setViewAdd = useZustand((state) => state.setViewAdd)
-  const state = useSelector((state) => state.postReducer.list)
-  const paging = useSelector((state) => state.postReducer.paging)
-  console.log(state)
-  useEffect(() => {
-    if (state.length === 0) {
-      dispatch(loadWordsFB())
-    }
-  }, [])
+  const [posts, setPosts] = useState([])
+  const fetch = async () => {
+    const _word_data = collection(db, 'dictionary')
+    let newArr = query(_word_data)
+    const wordSnap = await getDocs(newArr)
+    let temp = []
+    wordSnap.forEach((el) => {
+      temp.push({ ...el.data(), id: el.id })
+    })
+    setPosts([...temp])
+    return temp
+  }
+  const { data } = useQuery('post', fetch, { refetchInterval: posts })
+
   return (
     <React.Fragment>
-      <InfiScroll
-        callNext={() => {
-          dispatch(loadWordsFB(paging.next))
-        }}
-        is_next={paging.next ? true : false}
-      >
-        <Grid background="royalblue" padding="16px">
-          <Text size="30px"> MY DICTIONARY</Text>
-          <Grid isFlex style={{ flexDirection: 'column' }}>
-            {state.map((el, i) => {
-              return <Post {...el} i={i} key={i} />
-            })}
-          </Grid>
-          <Plus onClick={setViewAdd} />
+      <Grid background="royalblue" padding="16px">
+        <Text size="30px"> MY DICTIONARY</Text>
+        <Grid isFlex style={{ flexDirection: 'column' }}>
+          {posts.map((el, i) => {
+            return (
+              <Post {...el} i={i} key={i} setPosts={setPosts} posts={posts} />
+            )
+          })}
         </Grid>
-      </InfiScroll>
+        <Plus onClick={setViewAdd} />
+      </Grid>
     </React.Fragment>
   )
 }

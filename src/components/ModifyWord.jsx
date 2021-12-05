@@ -1,29 +1,31 @@
 import { doc, getDoc, updateDoc } from '@firebase/firestore'
-import { memo, useCallback, useEffect, useMemo, useState } from 'react'
+import { memo, useState } from 'react'
 import { useMutation, useQuery } from 'react-query'
-import { useDispatch } from 'react-redux'
 import styled from 'styled-components'
 import { Button, Grid, Text } from '../elements'
 import { db } from '../firebase'
-import { modifyPost } from '../redux/modules/postReducer'
 
 const ModifyWord = (props) => {
-  const dispatch = useDispatch()
   let [word, setWord] = useState({})
+  const { setPosts, posts } = props
+
   const fetchData = async () => {
     const docRef = doc(db, 'dictionary', props.id)
     const docSnap = await getDoc(docRef)
-    setWord(docSnap.data())
+    setWord({ ...docSnap.data(), id: docSnap.id })
   }
 
-  const { isLoading, error, data, isFetched } = useQuery(['onePost'], fetchData)
+  const { isLoading, error, data, isFetched } = useQuery('onePost', fetchData)
 
   const mutation = useMutation(async (payload) => {
     const docRef = doc(db, 'dictionary', payload.id)
     await updateDoc(docRef, {
       ...payload,
     })
-    await getDoc(docRef).then((doc) => dispatch(modifyPost(doc.data())))
+    const newOne = posts.map((el, i) =>
+      el.id === payload.id ? (posts[i] = payload) : el
+    )
+    setPosts(newOne)
   })
 
   return (
@@ -86,4 +88,4 @@ const InputBox = styled.input`
   height: 50px;
 `
 
-export default ModifyWord
+export default memo(ModifyWord)

@@ -4,8 +4,7 @@ import ModifyWord from './ModifyWord'
 
 const Post = (props) => {
   let [viewModify, setViewModify] = useState(false)
-  const { word, desc, eg, id } = props
-
+  const { word, desc, eg, id, setPosts, posts } = props
   return (
     <>
       <Grid padding="16px" background="#fff" margin="20px" width="80vw">
@@ -22,7 +21,14 @@ const Post = (props) => {
             {eg}
           </Text>
         </Grid>
-        {viewModify && <ModifyWord id={id} setViewModify={setViewModify} />}
+        {viewModify && (
+          <ModifyWord
+            id={id}
+            setPosts={setPosts}
+            setViewModify={setViewModify}
+            posts={posts}
+          />
+        )}
         {viewModify === false && (
           <Button onClick={() => setViewModify(true)}>수정하기</Button>
         )}
